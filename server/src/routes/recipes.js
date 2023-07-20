@@ -35,23 +35,24 @@ router.post("/", async (req,res)=> {
 
 //route to save a recipe
 router.put("/", async (req,res)=> {
-    try {
+    
         const recipe = await RecipeModel.findById(req.body.recipeID)
         const user = await UserModel.findById(req.body.userID)
+    try {
         user.savedRecipes.push(recipe)
         await user.save()
         res.json({savedRecipes: user.savedRecipes})
 
-    } catch (err) {
+        } catch (err) {
         res.json(err)
-    }
+        }
 })
 
 
 //get list of all recipe IDs that logged in user has saved (?)
-router.get("/savedRecipes/ids", async (req,res) => {
+router.get("/savedRecipes/ids/:userID", async (req,res) => {
     try {
-        const user = await UserModel.findById(req.body.userID)
+        const user = await UserModel.findById(req.params.userID)
         res.json({savedRecipes: user?.savedRecipes})//add the question mark in case user is null
     } catch (err) {
         res.json(err)
@@ -60,9 +61,9 @@ router.get("/savedRecipes/ids", async (req,res) => {
 
 
 //get just the saved recipes and not the IDs
-router.get("/savedRecipes", async (req,res) => {
+router.get("/savedRecipes/:userID", async (req,res) => {
     try {
-        const user = await UserModel.findById(req.body.userID)
+        const user = await UserModel.findById(req.params.userID)
         const savedRecipes = await RecipeModel.find({_id: {$in: user.savedRecipes}})//grab the saved recipes whos _id is in user.saveRecipes, using some more advanced mongoose syntax here
         res.json({savedRecipes})
     } catch (err) {
