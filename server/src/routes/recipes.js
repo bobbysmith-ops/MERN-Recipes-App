@@ -2,6 +2,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import { RecipeModel } from "../models/Recipes.js";//make sure to put Recipes.js
 import { UserModel } from '../models/Users.js';
+import {verifyToken} from "./users.js"
 
 
 const router = express.Router()
@@ -21,7 +22,7 @@ router.get("/", async (req,res)=> {
 
 //route to create a new recipe
 //these are routes we test with insomnia
-router.post("/", async (req,res)=> {
+router.post("/",verifyToken, async (req,res)=> {
     const recipe = new RecipeModel(req.body)//this is a fast way to say we're setting the object to have the fields of req.body
     try {
         const response = await recipe.save()
@@ -34,7 +35,7 @@ router.post("/", async (req,res)=> {
 
 
 //route to save a recipe
-router.put("/", async (req,res)=> {
+router.put("/", verifyToken, async (req,res)=> {
     
         const recipe = await RecipeModel.findById(req.body.recipeID)
         const user = await UserModel.findById(req.body.userID)
